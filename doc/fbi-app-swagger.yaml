@@ -1,0 +1,142 @@
+swagger: "2.0"
+info:
+  description: "The FBI has captured some Mafia internal records dating from 1985 until the present. They wish to use these records to map the entire mafia organization so they can put their resources towards catching the most important members."
+  version: "1.0.0"
+  title: "FBI Application"
+host: "localhost"
+basePath: "/mafia"
+tags:
+- name: "mobster"
+  description: "Search for any Mafia members tracked by the FBI"
+- name: "bosses"
+  description: "Search for Mafia Bosses tracked by the FBI"
+- name: "court"
+  description: "Perform justice operations with the Mafia Bosses and Mobsters"
+schemes:
+- "http"
+- "https"
+paths:
+  /mobster/{mobsterId}:
+    get:
+      tags:
+      - "mobster"
+      summary: "Get all the information from a mobster"
+      description: "Returns a specific mobster boss or not"
+      operationId: "getMobsterById"
+      produces:
+      - "application/json"
+      parameters:
+      - name: "mobsterId"
+        in: "path"
+        description: "ID of the mobster to return"
+        required: true
+        type: "string"
+      responses:
+        "200":
+          description: "Mobster retrieved"
+          schema:
+            $ref: "#/definitions/Mobster"
+        "400":
+          description: "Invalid ID supplied"
+        "404":
+          description: "Mobster not found"
+  /bosses/{bossId}:
+    get:
+      tags:
+      - "bosses"
+      summary: "Get all the information from a boss"
+      description: "Returns a specific boss"
+      operationId: "getBossById"
+      produces:
+      - "application/json"
+      parameters:
+      - name: "bossId"
+        in: "path"
+        description: "ID of the boss to return"
+        required: true
+        type: "string"
+      responses:
+        "200":
+          description: "Boss retrieved"
+          schema:
+            $ref: "#/definitions/Mobster"
+        "400":
+          description: "Invalid ID supplied"
+        "404":
+          description: "Boss not found"
+        "500":
+          description: "The mobster requested is not a boss"
+
+  /court/{bossId}/imprison:
+    get:
+      tags:
+      - "court"
+      summary: "Put into jail one Boss and relocate the subordinates"
+      description: "Put into jail one Boss"
+      operationId: "imprison"
+      produces:
+      - "application/json"
+      parameters:
+      - name: "bossId"
+        in: "path"
+        description: "ID of the boss to imprison"
+        required: true
+        type: "string"
+      responses:
+        "200":
+          description: "The new Boss"
+          schema:
+            $ref: "#/definitions/Mobster"
+        "400":
+          description: "Invalid ID supplied"
+        "404":
+          description: "Boss not found"
+        "500":
+          description: "The mobster requested is not a boss"
+  /court/{bossId}/release:
+    get:
+      tags:
+      - "court"
+      summary: "Release from jail one Boss and relocate the subordinates"
+      description: "Release from jail one Boss"
+      operationId: "release"
+      produces:
+      - "application/json"
+      parameters:
+      - name: "bossId"
+        in: "path"
+        description: "ID of the boss to imprison"
+        required: true
+        type: "string"
+      responses:
+        "200":
+          description: "The Boss now free"
+          schema:
+            $ref: "#/definitions/Mobster"
+        "400":
+          description: "Invalid ID supplied"
+        "404":
+          description: "Boss not found"
+        "500":
+          description: "The mobster requested is not a boss"
+definitions:
+  Mobster:
+    type: "object"
+    properties:
+      nickname:
+        type: "string"
+      name:
+        type: "string"
+      surname:
+        type: "string"
+      since:
+        type: "string"
+        description: "In the Mafia since this date with format yyyy-MM-dd"
+        example: "2021-01-20 14:58:00"
+      formerBosses:
+        type: "array"
+        items:
+          type: "string"
+      inJail:
+        type: "boolean"
+        description: "Wheter if the mobster is free or in jail"

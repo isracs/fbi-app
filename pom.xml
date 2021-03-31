@@ -1,0 +1,257 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 https://maven.apache.org/xsd/maven-4.0.0.xsd">
+    <modelVersion>4.0.0</modelVersion>
+    <packaging>pom</packaging>
+    <modules>
+        <module>fbi-app-runner</module>
+        <module>fbi-app-services</module>
+        <module>fbi-app-resources</module>
+        <module>fbi-app-repositories</module>
+    </modules>
+
+    <parent>
+        <groupId>org.springframework.boot</groupId>
+        <artifactId>spring-boot-starter-parent</artifactId>
+        <version>2.4.2</version>
+    </parent>
+
+    <groupId>com.stratio.challenge</groupId>
+    <artifactId>fbi-app</artifactId>
+    <version>0.0.1-SNAPSHOT</version>
+    <name>fbi-app</name>
+    <description>FBI Application</description>
+    <properties>
+        <java.version>1.8</java.version>
+        <!-- Unit Testing Coverage Quality Gate -->
+        <jacoco-maven-plugin.line.minimum>0.90</jacoco-maven-plugin.line.minimum>
+        <jacoco-maven-plugin.branch.minimum>0.90</jacoco-maven-plugin.branch.minimum>
+
+        <!-- Jacoco report generation variables-->
+        <jacoco-maven-plugin.version>0.8.5</jacoco-maven-plugin.version>
+        <jacocoAgent>
+            -javaagent:${settings.localRepository}/org/jacoco/org.jacoco.agent/${jacoco-maven-plugin.version}/org.jacoco.agent-${jacoco-maven-plugin.version}-runtime.jar
+        </jacocoAgent>
+        <jacoco-it.file>${project.build.directory}/jacoco-it.exec</jacoco-it.file>
+        <jacoco-unit.file>${project.build.directory}/jacoco.exec</jacoco-unit.file>
+        <jacocoFailsafeArgLine>${jacocoAgent}=destfile=${jacoco-it.file}</jacocoFailsafeArgLine>
+
+        <!-- Maven plugins -->
+        <plugins.failsafe.version>3.0.0-M5</plugins.failsafe.version>
+    </properties>
+    <dependencies>
+        <dependency>
+            <groupId>org.springframework.boot</groupId>
+            <artifactId>spring-boot-starter-data-mongodb</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>org.springframework.boot</groupId>
+            <artifactId>spring-boot-starter-webflux</artifactId>
+        </dependency>
+
+        <dependency>
+            <groupId>org.projectlombok</groupId>
+            <artifactId>lombok</artifactId>
+            <optional>true</optional>
+        </dependency>
+
+
+        <!--# test dependencies -->
+        <dependency>
+            <groupId>junit</groupId>
+            <artifactId>junit</artifactId>
+            <scope>test</scope>
+        </dependency>
+        <dependency>
+            <groupId>org.mockito</groupId>
+            <artifactId>mockito-core</artifactId>
+            <scope>test</scope>
+        </dependency>
+        <dependency>
+            <groupId>org.springframework.boot</groupId>
+            <artifactId>spring-boot-starter-test</artifactId>
+            <scope>test</scope>
+        </dependency>
+        <dependency>
+            <groupId>io.projectreactor</groupId>
+            <artifactId>reactor-test</artifactId>
+            <scope>test</scope>
+        </dependency>
+    </dependencies>
+
+    <build>
+        <pluginManagement>
+            <plugins>
+                <plugin>
+                    <groupId>org.springframework.boot</groupId>
+                    <artifactId>spring-boot-maven-plugin</artifactId>
+                </plugin>
+                <plugin>
+                    <groupId>org.apache.maven.plugins</groupId>
+                    <artifactId>maven-surefire-plugin</artifactId>
+                    <version>${plugins.failsafe.version}</version>
+                    <dependencies>
+                        <dependency>
+                            <groupId>org.apache.maven.surefire</groupId>
+                            <artifactId>surefire-junit47</artifactId>
+                            <version>${plugins.failsafe.version}</version>
+                        </dependency>
+                    </dependencies>
+                </plugin>
+
+            </plugins>
+        </pluginManagement>
+        <plugins>
+
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-failsafe-plugin</artifactId>
+                <version>${plugins.failsafe.version}</version>
+                <configuration>
+                    <argLine>${jacocoFailsafeArgLine}</argLine>
+                    <includes>
+                        <include>**/IT*.java</include>
+                    </includes>
+                </configuration>
+                <executions>
+                    <execution>
+                        <goals>
+                            <goal>integration-test</goal>
+                            <goal>verify</goal>
+                        </goals>
+                    </execution>
+                </executions>
+            </plugin>
+            <plugin>
+                <groupId>org.jacoco</groupId>
+                <artifactId>jacoco-maven-plugin</artifactId>
+                <version>${jacoco-maven-plugin.version}</version>
+                <configuration>
+                    <excludes>
+                        <exclude>**/*Application.*</exclude>
+                        <exclude>**/*Config.*</exclude>
+                        <exclude>**/*Configuration.*</exclude>
+                        <exclude>**/*DTO.*</exclude>
+                        <exclude>**/*Dto.*</exclude>
+                        <exclude>**/*Error.*</exclude>
+                        <exclude>**/*Event.*</exclude>
+                        <exclude>**/*Response.*</exclude>
+                        <exclude>**/*Payload.*</exclude>
+                        <exclude>**/avro/**/*</exclude>
+                        <exclude>**/dto/**/*</exclude>
+                        <exclude>**/domain/**/*</exclude>
+                        <exclude>**/model/**/*</exclude>
+                        <exclude>**/payload/**/*</exclude>
+                        <exclude>**/error/**/*</exclude>
+                        <exclude>**/*Test.*</exclude>
+                        <exclude>**/*IT.*</exclude>
+                        <exclude>**/*CT.*</exclude>
+                        <exclude>**/TypeReference$*.class</exclude>
+                        <exclude>TypeReference$*.class</exclude>
+                    </excludes>
+                </configuration>
+                <executions>
+                    <execution>
+                        <id>pre-unit-test</id>
+                        <goals>
+                            <goal>prepare-agent</goal>
+                        </goals>
+                    </execution>
+
+                    <execution>
+                        <id>post-unit-test-report</id>
+                        <phase>test</phase>
+                        <goals>
+                            <goal>report</goal>
+                        </goals>
+                        <configuration>
+                            <dataFile>${jacoco-unit.file}</dataFile>
+                            <outputDirectory>${project.build.directory}/jacoco-unit-test-coverage-report
+                            </outputDirectory>
+                        </configuration>
+                    </execution>
+
+                    <execution>
+                        <id>pre-integration-test</id>
+                        <phase>pre-integration-test</phase>
+                        <goals>
+                            <goal>prepare-agent</goal>
+                        </goals>
+                        <configuration>
+                            <destFile>target/jacoco-it.exec</destFile>
+                            <propertyName>jacocoFailsafeArgLine</propertyName>
+                        </configuration>
+                    </execution>
+
+                    <execution>
+                        <id>post-integration-test</id>
+                        <phase>post-integration-test</phase>
+                        <goals>
+                            <goal>report</goal>
+                        </goals>
+                        <configuration>
+                            <dataFile>target/jacoco-it.exec</dataFile>
+                            <outputDirectory>${project.build.directory}/jacoco-integration-test-coverage-report
+                            </outputDirectory>
+                        </configuration>
+                    </execution>
+
+                    <execution>
+                        <id>unit</id>
+                        <goals>
+                            <goal>check</goal>
+                        </goals>
+                        <configuration>
+                            <dataFile>${jacoco-unit.file}</dataFile>
+                            <rules>
+                                <rule>
+                                    <element>BUNDLE</element>
+                                    <limits>
+                                        <limit>
+                                            <counter>LINE</counter>
+                                            <value>COVEREDRATIO</value>
+                                            <minimum>${jacoco-maven-plugin.line.minimum}</minimum>
+                                        </limit>
+                                        <limit>
+                                            <counter>BRANCH</counter>
+                                            <value>COVEREDRATIO</value>
+                                            <minimum>${jacoco-maven-plugin.branch.minimum}</minimum>
+                                        </limit>
+                                    </limits>
+                                </rule>
+                            </rules>
+                        </configuration>
+                    </execution>
+
+                    <execution>
+                        <id>integration</id>
+                        <goals>
+                            <goal>check</goal>
+                        </goals>
+                        <configuration>
+                            <dataFile>${jacoco-it.file}</dataFile>
+                            <rules>
+                                <rule>
+                                    <element>BUNDLE</element>
+                                    <limits>
+                                        <limit>
+                                            <counter>LINE</counter>
+                                            <value>COVEREDRATIO</value>
+                                            <minimum>${jacoco-maven-plugin.line.minimum}</minimum>
+                                        </limit>
+                                        <limit>
+                                            <counter>BRANCH</counter>
+                                            <value>COVEREDRATIO</value>
+                                            <minimum>${jacoco-maven-plugin.branch.minimum}</minimum>
+                                        </limit>
+                                    </limits>
+                                </rule>
+                            </rules>
+                        </configuration>
+                    </execution>
+                </executions>
+            </plugin>
+        </plugins>
+    </build>
+
+</project>
