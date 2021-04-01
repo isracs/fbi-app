@@ -16,7 +16,7 @@
         <version>2.4.2</version>
     </parent>
 
-    <groupId>com.stratio.challenge</groupId>
+    <groupId>com.fbi.challenge</groupId>
     <artifactId>fbi-app</artifactId>
     <version>0.0.1-SNAPSHOT</version>
     <name>fbi-app</name>
